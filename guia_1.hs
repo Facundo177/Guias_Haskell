@@ -1,3 +1,14 @@
+{-
+Ir modificando este archivo y subiendo las nuevas versiones a github
+
+git add .
+git commit -m ""
+git push -u origin main
+-}
+
+
+-- GUIA 3 (Primera de Haskell)
+
 -- Ej 1
 
 -- a)
@@ -200,9 +211,35 @@ todosMenores (t0, t1, t2) = (f t0 > g t0) && (f t1 > g t1) && (f t2 > g t2)
 
 
 -- Ej 6
+
 type Anio = Integer
 type EsBisiesto = Bool
 
 bisiesto :: Anio -> EsBisiesto
 bisiesto anio   | not (mod anio 4 == 0) || ((mod anio 100 == 0) && not (mod anio 400 == 0)) = False
                 | otherwise = True
+
+
+-- Ej 7
+type Coordenada3d = (Float, Float, Float)
+
+distanciaManhattan :: Coordenada3d -> Coordenada3d -> Float
+distanciaManhattan (p0, p1, p2) (q0, q1, q2) = absoluto (p0 - q0) + absoluto (p1 - q1) + absoluto (p2 - q2)
+                                        where absoluto x | x < 0 = -x 
+                                                         | otherwise = x
+
+
+-- Ej 8
+comparar :: Integer -> Integer -> Integer
+comparar a b    | sumaUltimosDosDigitos a < sumaUltimosDosDigitos b = 1
+                | sumaUltimosDosDigitos a > sumaUltimosDosDigitos b = -1
+                | otherwise = 0
+                where   absoluto x | x < 0 = -x 
+                                   | otherwise = x
+                        sumaUltimosDosDigitos x = mod (absoluto x) 10 + mod (div (absoluto x) 10) 10
+
+
+-- Ej 9
+-- Especificaciones hechas en el cuaderno
+
+
