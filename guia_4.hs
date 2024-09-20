@@ -62,7 +62,7 @@ esCapicua n | n < 10 = True
                     ultimoDigito n = mod n 10
                     primerDigito n = div n (10 ^ (cantDigitos n - 1))
                     sacarPrimerYUltimoDigito n = div (mod n (10 ^ (cantDigitos n - 1))) 10
-                
+            
 -- Ej 10
 f1 :: Int -> Int
 f1 0 = 1
@@ -118,6 +118,7 @@ sumaPotencias q n m | n == 1 = auxiliarB q 1 m   -- Es mejor hacer n == 0 = 0  -
                     where auxiliarB q n m   | m == 1 = q^(n+1)
                                             | otherwise = q^(n+m) + auxiliarB q n (m-1)
 
+
 -- Ej 15
 sumaRacionales :: Integer -> Integer -> Float
 sumaRacionales n m  | n == 1 = auxiliar 1 (fromInteger m)
@@ -167,7 +168,6 @@ esFibonacci n = compararFibonacci n 1
                                             | otherwise = compararFibonacci n (m+1)
 
 
-
 -- Ej 18
 mayorDigitoPar :: Integer -> Integer
 mayorDigitoPar n = siEsPar (unDigito n)
@@ -178,7 +178,6 @@ mayorDigitoPar n = siEsPar (unDigito n)
                         unDigito n  | n < 10 = n 
                                     | otherwise = quedarmeConElMayor (siEsPar (mod n 10)) (unDigito (div n 10))
                             
-
 
 -- Ej 19
 sumaPrimerosmPrimos :: Integer -> Integer
@@ -195,7 +194,6 @@ esSumaInicialDePrimos n | n == 1 = False
                                                 | sumaPrimerosmPrimos i == n = True
                                                 | otherwise = auxiliar n (i+1)
                                 
-
 
 -- Ej 20
 sumaDivisores :: Integer -> Integer
@@ -215,8 +213,10 @@ tomaValorMax n m    | n > m = undefined
                             
                             
 -- Ej 21
---pitagoras :: Integer -> Integer -> Integer -> Integer     
-
-
-
-
+pitagoras :: Integer -> Integer -> Integer -> Integer     
+pitagoras m n r | m == 0 = recursionAuxiliar m n r
+                | otherwise = recursionAuxiliar m n r + pitagoras (m-1) n r
+                where   recursionAuxiliar m n r | n == 0 = siCumpleCondicion m n r
+                                                | otherwise = siCumpleCondicion m n r + recursionAuxiliar m (n-1) r
+                        siCumpleCondicion m n r | (m^2 + n^2) <= r^2 = 1
+                                                | otherwise = 0
