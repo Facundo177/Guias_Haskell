@@ -139,7 +139,7 @@ masRepetido tablero = fst (masApariciones (aparicionesDeCadaNumero (aplanarTable
                                 masApariciones [(numero, apariciones)] = (numero, apariciones)
                                 masApariciones ((numero_A, apariciones_A):(numero_B, apariciones_B):xs) | apariciones_A > apariciones_B = masApariciones ((numero_A, apariciones_A):xs)
                                                                                                         | otherwise = masApariciones ((numero_B, apariciones_B):xs)
-                          
+
 
 
 valoresDeCamino :: Tablero -> Camino -> [Int]
@@ -172,3 +172,55 @@ esCaminoFibo valores i = mismosElementos valores (fibonacciDesdeHasta i (largo v
                                 fibonacciDesdeHasta _ 0 = [0]
                                 fibonacciDesdeHasta i j | i >= j = [fibonacci i]
                                                         | otherwise = [fibonacci i] ++ (fibonacciDesdeHasta (i+1) j)
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+-- ¡Vamos Campeones!
+
+
+atajaronSuplentes :: [(String, String)] -> [Int] -> Int -> Int
+atajaronSuplentes [] _ _ = 0
+atajaronSuplentes _ [] _ = 0
+atajaronSuplentes arquerosPorEquipo goles totalGolesTorneo = totalGolesTorneo - (totalGolesDeTitulares goles)
+                                                        where   totalGolesDeTitulares [] = 0
+                                                                totalGolesDeTitulares (x:xs) = x + totalGolesDeTitulares xs
+
+
+
+equiposValidos :: [(String, String)] -> Bool
+equiposValidos [] = True
+equiposValidos (x:xs) = not (arqueroYClubIguales x) && not (hayRepeticiones x xs) && equiposValidos xs
+                        where   hayRepeticiones _ [] = False
+                                hayRepeticiones (equipo, arquero) ((e, a):xs)   | equipo == e || arquero == a = True
+                                                                                | otherwise = hayRepeticiones (equipo, arquero) xs
+                                arqueroYClubIguales (equipo, arquero) = equipo == arquero
+
+
+
+porcentajeDeGoles :: String -> [(String, String)] -> [Int] -> Float
+porcentajeDeGoles _ [] _ = 0.0
+porcentajeDeGoles _ _ [] = 0.0
+porcentajeDeGoles arquero arquerosPorEquipo goles = division (golesRecibidos arquero arquerosPorEquipo goles) (totalGolesDeTitulares goles) 
+                                                        where   totalGolesDeTitulares [] = 0
+                                                                totalGolesDeTitulares (x:xs) = x + totalGolesDeTitulares xs
+                                                                golesRecibidos _ [] _ = 0
+                                                                golesRecibidos _ _ [] = 0
+                                                                golesRecibidos nombre ((equipo, arquero):xs) (y:ys)     | nombre == arquero = y
+                                                                                                                        | otherwise = golesRecibidos nombre xs ys
+                                                                division :: Int -> Int -> Float
+                                                                division a b = fromIntegral a / fromIntegral b                                             
+
+
+
+vallaMenosVencida :: [(String, String)] -> [Int] -> String
+vallaMenosVencida [] _ = undefined
+vallaMenosVencida _ [] = undefined
+vallaMenosVencida arquerosPorEquipo goles = snd (clubYArqueroConMenosGoles arquerosPorEquipo goles)
+                                        where   clubYArqueroConMenosGoles [x] _ = x
+                                                clubYArqueroConMenosGoles (x1:x2:xs) (y1:y2:ys) | y1 < y2 = clubYArqueroConMenosGoles (x1:xs) (y1:ys)
+                                                                                                | otherwise = clubYArqueroConMenosGoles (x2:xs) (y2:ys)
