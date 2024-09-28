@@ -224,3 +224,88 @@ vallaMenosVencida arquerosPorEquipo goles = snd (clubYArqueroConMenosGoles arque
                                         where   clubYArqueroConMenosGoles [x] _ = x
                                                 clubYArqueroConMenosGoles (x1:x2:xs) (y1:y2:ys) | y1 < y2 = clubYArqueroConMenosGoles (x1:xs) (y1:ys)
                                                                                                 | otherwise = clubYArqueroConMenosGoles (x2:xs) (y2:ys)
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+-- Registro de Alumnos
+
+
+aproboMasDeNMaterias :: [([Char], [Int])] -> [Char] -> Int -> Bool
+aproboMasDeNMaterias [] _ _ = undefined
+aproboMasDeNMaterias _ [] _ = undefined
+aproboMasDeNMaterias registro alumno n = (cantidadDeMateriasAprobadas (encontrarNotasAlumno alumno registro)) > n
+                                        where   encontrarNotasAlumno _ [] = []
+                                                encontrarNotasAlumno nombre ((alumno, notas):xs)        | nombre == alumno = notas
+                                                                                                        | otherwise = encontrarNotasAlumno nombre xs
+                                                cantidadDeMateriasAprobadas [] = 0
+                                                cantidadDeMateriasAprobadas (x:xs)      | x >= 4 = 1 + cantidadDeMateriasAprobadas xs
+                                                                                        | otherwise = cantidadDeMateriasAprobadas xs
+
+
+
+buenosAlumnos :: [([Char], [Int])] -> [[Char]]
+buenosAlumnos [] = []
+buenosAlumnos ((alumno, notas):xs)      | (noTieneAplazos notas) && ((promedio notas) >= 8) = alumno : buenosAlumnos xs
+                                        | otherwise = buenosAlumnos xs
+                                        where   noTieneAplazos [] = True
+                                                noTieneAplazos (x:xs) = (x >= 4) && noTieneAplazos xs
+                                                sumaTodo [] = 0
+                                                sumaTodo (x:xs) = x + sumaTodo xs
+                                                largoLista [] = 0
+                                                largoLista (x:xs) = 1 + largoLista xs
+                                                promedio notas = fromIntegral (sumaTodo notas) / fromIntegral (largoLista notas)
+
+
+
+mejorPromedio :: [([Char], [Int])] -> [Char]
+mejorPromedio [] = []
+mejorPromedio registro = fst (elDeMayorPromedio (promedioDeCadaUno registro))
+                        where   sumaTodo [] = 0
+                                sumaTodo (x:xs) = x + sumaTodo xs
+                                largoLista [] = 0
+                                largoLista (x:xs) = 1 + largoLista xs
+                                promedio notas = fromIntegral (sumaTodo notas) / fromIntegral (largoLista notas)
+
+                                promedioDeCadaUno [] = []
+                                promedioDeCadaUno ((alumno, notas):xs) = (alumno, (promedio notas)) : promedioDeCadaUno xs
+                                elDeMayorPromedio [x] = x
+                                elDeMayorPromedio ((alumno_1, promedio_1):(alumno_2, promedio_2):xs)    | promedio_1 > promedio_2 = elDeMayorPromedio ((alumno_1, promedio_1):xs)
+                                                                                                        | otherwise = elDeMayorPromedio ((alumno_2, promedio_2):xs)
+
+
+
+seGraduoConHonores :: [([Char], [Int])] -> Int -> [Char] -> Bool
+seGraduoConHonores [] _ _ = undefined
+seGraduoConHonores registro cantidadDeMateriasDeLaCarrera alumno        | not (aproboMasDeNMaterias registro alumno (cantidadDeMateriasDeLaCarrera-1)) = False
+                                                                        | not (estaEn alumno (buenosAlumnos registro)) = False
+                                                                        | not (cumpleConPromedio (promedioDeCadaUno registro) (encontrarPromedioAlumno alumno (promedioDeCadaUno registro))) = False
+                                                                        | otherwise = True
+                                                                        where   estaEn :: [Char] -> [[Char]] -> Bool
+                                                                                estaEn _ [] = False
+                                                                                estaEn alumno (x:xs)    | alumno == x = True
+                                                                                                        | otherwise = estaEn alumno xs
+                                                                                
+                                                                                encontrarPromedioAlumno :: [Char] -> [([Char], Float)] -> Float
+                                                                                encontrarPromedioAlumno _ [] = 0
+                                                                                encontrarPromedioAlumno nombre ((alumno, promedio):xs)  | nombre == alumno = promedio
+                                                                                                                                        | otherwise = encontrarPromedioAlumno nombre xs
+                                                                                
+                                                                                sumaTodo [] = 0
+                                                                                sumaTodo (x:xs) = x + sumaTodo xs
+                                                                                largoLista [] = 0
+                                                                                largoLista (x:xs) = 1 + largoLista xs
+                                                                                promedio notas = fromIntegral (sumaTodo notas) / fromIntegral (largoLista notas)
+
+                                                                                promedioDeCadaUno :: [([Char], [Int])] -> [([Char], Float)]
+                                                                                promedioDeCadaUno [] = []
+                                                                                promedioDeCadaUno ((alumno, notas):xs) = (alumno, (promedio notas)) : promedioDeCadaUno xs
+
+                                                                                cumpleConPromedio :: [([Char], Float)] -> Float -> Bool
+                                                                                cumpleConPromedio [] _ = True
+                                                                                cumpleConPromedio ((alumno, promedio):xs) promedio_alumno = ((promedio-1) <= promedio_alumno) && (cumpleConPromedio xs promedio_alumno) 
+
